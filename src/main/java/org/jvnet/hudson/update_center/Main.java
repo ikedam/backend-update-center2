@@ -251,8 +251,8 @@ public class Main {
         {
             throw new Exception("-repository must be specified when using hpiDiretoryPath.");
         }
-        
-        return new LocalDirectoryRepository(hpiDirectory, new URL(repository), includeSnapshots);
+
+        return new LocalDirectoryRepository(hpiDirectory, new URL(repository), includeSnapshots, download);
     }
 
     /**
@@ -291,7 +291,7 @@ public class Main {
 
                 if (download!=null) {
                     for (HPI v : hpi.artifacts.values()) {
-                        stage(v, new File(download, "plugins/" + hpi.artifactId + "/" + v.version + "/" + hpi.artifactId + ".hpi"));
+                        stage(v, new File(download, v.getRelativePath()));
                     }
                     if (!hpi.artifacts.isEmpty())
                         createLatestSymlink(hpi, plugin.latest);
@@ -319,7 +319,7 @@ public class Main {
         new File(dir,"latest").delete();
 
         ProcessBuilder pb = new ProcessBuilder();
-        pb.command("ln","-s", latest.version, "latest");
+        pb.command("ln","-s", latest.getShortVersion(), "latest");
         pb.directory(dir);
         int r = pb.start().waitFor();
         if (r !=0)
